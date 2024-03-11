@@ -30,5 +30,25 @@ public class TestLab1 {
                 2.0000000009313226, 1.E-7);
     }
 
+    @Test
+    public void checkEfficiencyGoldenRatioMinimum(){
+        Assert.assertEquals(MathToolkit.goldenRatioMinimum(x -> pow(x,3) - 2 * pow(x,2) - 5 * x + 6, 0, 4, 0.0001, 100),
+                2.1196552871094, 1.E-4);
+        Assert.assertEquals(MathToolkit.goldenRatioMinimum(x -> sin(x) + x, 0, 3, 0.000001, MIDDLE),
+                4.9891915465022E-7, 1.E-4);
+        Assert.assertEquals(MathToolkit.goldenRatioMinimum(x -> 1 / x - x, 0.1, 1.5, HIGH, LOW),
+                1.5000000000000, 1.E-4);
+    }
+
+    @Test
+    public void checkEfficiencyGoldenRatioMaximum(){
+        Assert.assertEquals(MathToolkit.goldenRatioMaximum(x -> pow(x,3) - 2 * pow(x,2) - 5 * x + 6, 0, 4, 0.0001, 100),
+                3.1240319208736E-5, 1.E-6);
+        Assert.assertEquals(MathToolkit.goldenRatioMaximum(x -> sin(x) + x, 0, 3, 0.000001, MIDDLE),
+                2.9999995010808, 1.E-6);
+        Assert.assertEquals(MathToolkit.goldenRatioMaximum(x -> 1 / x - x, 0.1, 1.5, HIGH, LOW),
+                0.1000000000000, 1.E-6);
+    }
+
 
 }
