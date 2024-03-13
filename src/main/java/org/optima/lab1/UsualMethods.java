@@ -45,26 +45,25 @@ public class UsualMethods {
 
         double eps = 0;
         switch (levelEps){
-            case LOW -> eps = DefaultNum.MAX_ITERATIONS_LOW;
-            case MIDDLE -> eps = DefaultNum.MAX_ITERATIONS_MIDDLE;
-            case HIGH -> eps = DefaultNum.MAX_ITERATIONS_HIGH;
+            case LOW -> eps = DefaultNum.EPSILON_LOW;
+            case MIDDLE -> eps = DefaultNum.EPSILON_MIDDLE;
+            case HIGH -> eps = DefaultNum.EPSILON_HIGH;
         }
 
         return MathToolkit.fibonacci(function, x1, x2, eps);
     }
 
-    public static int[] closestFibonacciPairWithIndex(double value) {
-        int prev = 0;
-        int curr = 1;
-        int index = 1;
+    public static double[] closestFibonacciPair(double value) {
 
-        while (curr < value) {
-            int next = prev + curr;
-            prev = curr;
-            curr = next;
-            index++;
+        if (value < 2) return new double[]{0, 1};
+        int fib_num_1 = 0;
+        int fib_num_2 = 1;
+        int temp;
+        while (fib_num_1 < value) {
+            temp = fib_num_1;
+            fib_num_1 = fib_num_2;
+            fib_num_2 += temp;
         }
-
-        return new int[]{prev, curr, index - 2};
+        return new double[]{fib_num_1, fib_num_2};
     }
 }
