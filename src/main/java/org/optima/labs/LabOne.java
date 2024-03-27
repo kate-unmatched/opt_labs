@@ -1,6 +1,8 @@
-package org.optima.lab1;
+package org.optima.labs;
 
+import org.optima.utils.DetailedMethods;
 import org.optima.utils.NumCharacteristics;
+import org.optima.utils.InterMethods;
 
 import static java.lang.Math.*;
 
@@ -8,8 +10,8 @@ import java.util.function.DoubleUnaryOperator;
 
 import static org.optima.utils.DefaultNum.REVERSE_GRP;
 
-public class MathToolkit {
-    public static double dichotomy(DoubleUnaryOperator function, double x1, double x2, double eps, int maxIterations) {
+public class LabOne {
+    public static Double dichotomy(DoubleUnaryOperator function, double x1, double x2, double eps, int maxIterations) {
 
         if (x1 > x2) {
             double tmp = x1;
@@ -37,17 +39,17 @@ public class MathToolkit {
         return root;
     }
 
-    public static double dichotomy(DoubleUnaryOperator function, double x1, double x2,
+    public static Double dichotomy(DoubleUnaryOperator function, double x1, double x2,
                                    double eps, NumCharacteristics levelIter) {
-        return UsualMethods.customParam(function, x1, x2, eps, levelIter, MathToolkit::dichotomy);
+        return InterMethods.customParam(function, x1, x2, eps, levelIter, LabOne::dichotomy);
     }
 
-    public static double dichotomy(DoubleUnaryOperator function, double x1, double x2,
+    public static Double dichotomy(DoubleUnaryOperator function, double x1, double x2,
                                    NumCharacteristics levelEps, NumCharacteristics levelIter) {
-        return UsualMethods.customParam(function, x1, x2, levelEps, levelIter, MathToolkit::dichotomy);
+        return InterMethods.customParam(function, x1, x2, levelEps, levelIter, LabOne::dichotomy);
     }
 
-    public static double goldenRatioMinimum(DoubleUnaryOperator function, double x1, double x2, double eps, int maxIterations) {
+    public static Double goldenRatioMinimum(DoubleUnaryOperator function, double x1, double x2, double eps, int maxIterations) {
 
         if (x1 > x2) {
             double tmp = x1;
@@ -78,12 +80,12 @@ public class MathToolkit {
 
     public static double goldenRatioMinimum(DoubleUnaryOperator function, double x1, double x2,
                                    double eps, NumCharacteristics levelIter) {
-        return UsualMethods.customParam(function, x1, x2, eps, levelIter, MathToolkit::goldenRatioMinimum);
+        return InterMethods.customParam(function, x1, x2, eps, levelIter, LabOne::goldenRatioMinimum);
     }
 
     public static double goldenRatioMinimum(DoubleUnaryOperator function, double x1, double x2,
                                    NumCharacteristics levelEps, NumCharacteristics levelIter) {
-        return UsualMethods.customParam(function, x1, x2, levelEps, levelIter, MathToolkit::goldenRatioMinimum);
+        return InterMethods.customParam(function, x1, x2, levelEps, levelIter, LabOne::goldenRatioMinimum);
     }
 
     public static double goldenRatioMaximum(DoubleUnaryOperator function, double x1, double x2, double eps, int maxIterations) {
@@ -117,12 +119,12 @@ public class MathToolkit {
 
     public static double goldenRatioMaximum(DoubleUnaryOperator function, double x1, double x2,
                                             double eps, NumCharacteristics levelIter) {
-        return UsualMethods.customParam(function, x1, x2, eps, levelIter, MathToolkit::goldenRatioMaximum);
+        return InterMethods.customParam(function, x1, x2, eps, levelIter, LabOne::goldenRatioMaximum);
     }
 
     public static double goldenRatioMaximum(DoubleUnaryOperator function, double x1, double x2,
                                             NumCharacteristics levelEps, NumCharacteristics levelIter) {
-        return UsualMethods.customParam(function, x1, x2, levelEps, levelIter, MathToolkit::goldenRatioMaximum);
+        return InterMethods.customParam(function, x1, x2, levelEps, levelIter, LabOne::goldenRatioMaximum);
     }
 
     public static double fibonacci(DoubleUnaryOperator function, double x1, double x2, double eps) {
@@ -134,7 +136,7 @@ public class MathToolkit {
         }
 
         double a = x1, b = x2, delta, temp;
-        double[] fib_pair = UsualMethods.closestFibonacciPair((b - a) / eps);
+        double[] fib_pair = DetailedMethods.closestFibonacciPair((b - a) / eps);
         double fib_num_1 = fib_pair[0], fib_num_2 = fib_pair[1];
 
         while (fib_num_1 != fib_num_2 && x2 - x1 > eps) {
@@ -155,6 +157,6 @@ public class MathToolkit {
     }
 
     public static double fibonacci(DoubleUnaryOperator function, double x1, double x2, NumCharacteristics levelEps) {
-        return UsualMethods.customParam(function, x1, x2, levelEps);
+        return InterMethods.customParam(function, x1, x2, levelEps, LabOne::fibonacci);
     }
 }
