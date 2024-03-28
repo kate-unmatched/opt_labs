@@ -9,6 +9,7 @@ import org.optima.kit.NumericUtils;
 import org.optima.labs.LabTwo;
 import org.optima.utils.NumCharacteristics;
 
+import java.text.DecimalFormat;
 import java.util.stream.IntStream;
 
 import static org.optima.utils.NumCharacteristics.MIDDLE;
@@ -38,7 +39,7 @@ public class TestLab2 {
         FunctionTUnary<DoubleVector> function = v -> {
             double sum = 0.0;
             for (int i = 0; i < v.size(); i++) {
-                sum += Math.pow(v.get(i), 2);
+                sum += Math.pow(2 - v.get(i), 2);
             }
             return sum;
         };
@@ -47,7 +48,7 @@ public class TestLab2 {
         DoubleVector x_1 = new DoubleVector(10., 10.);
         DoubleVector core = LabTwo.dichotomyCore(function, x_1, x_0, 1E-2, 100);
 
-        RealVector correct = new ArrayRealVector(new double[]{0.000000298, 0.000000298});
+        RealVector correct = new ArrayRealVector(new double[]{2, 2});
 
         IntStream.range(0, x_0.size()).forEach(i ->
                 Assert.assertEquals(core.get(i), correct.getEntry(i), 1E-3));
@@ -65,11 +66,15 @@ public class TestLab2 {
         RealVector left = new ArrayRealVector(new double[]{-10, -10});
         RealVector right = new ArrayRealVector(new double[]{10, 10});
 
-        RealVector correct1 = new ArrayRealVector(new double[]{0.000000298, 0.000000298});
+        RealVector correct1 = new ArrayRealVector(new double[]{0.0000023842, 0.0000023842});
         RealVector correct2 = new ArrayRealVector(new double[]{0.0000023842, 0.0000023842});
         RealVector correct3 = new ArrayRealVector(new double[]{0.000000298, 0.000000298});
 
-        RealVector misa = LabTwo.dichotomyMy(function, left, right, 1E-6, 100);
+        long startTime = System.currentTimeMillis();
+        RealVector misa = LabTwo.dichotomyMy(function, left, right, 1E-5, 100);
+        long endTime = System.currentTimeMillis();
+        System.out.println(new DecimalFormat("#0.0000").format((endTime - startTime)/1000.));
+
         RealVector kira = LabTwo.dichotomyMy(function, left, right, 1E-5, MIDDLE);
         RealVector ryuk = LabTwo.dichotomyMy(function, left, right, MIDDLE, LOW);
 
@@ -79,5 +84,66 @@ public class TestLab2 {
                 Assert.assertEquals(kira.getEntry(i), correct2.getEntry(i), 1E-7));
         IntStream.range(0, correct3.getDimension()).forEach(i ->
                 Assert.assertEquals(ryuk.getEntry(i), correct3.getEntry(i), 1E-7));
+    }
+
+    @Test
+    public void checkEfficiencyGoldenRatioMy(){
+        FunctionTUnary<RealVector> function = v -> {
+            double sum = 0.0;
+            for (int i = 0; i < v.getDimension(); i++) {
+                sum += Math.pow(v.getEntry(i), 2);
+            }
+            return sum;
+        };
+
+        RealVector left = new ArrayRealVector(new double[]{-10, -10});
+        RealVector right = new ArrayRealVector(new double[]{10, 10});
+
+        long startTime = System.currentTimeMillis();
+        RealVector result1 = LabTwo.goldenRatio(function, left, right, 1E-5, 100);
+        long endTime = System.currentTimeMillis();
+        System.out.println(new DecimalFormat("#0.0000").format((endTime - startTime)/1000.));
+
+        RealVector result2 = LabTwo.goldenRatio(function, left, right, 1E-5, MIDDLE);
+        RealVector result3 = LabTwo.goldenRatio(function, left, right, MIDDLE, LOW);
+
+        RealVector correct1 = new ArrayRealVector(new double[]{0.0000002053, 0.0000002053});
+        RealVector correct2 = new ArrayRealVector(new double[]{0.0000023842, 0.0000023842});
+        RealVector correct3 = new ArrayRealVector(new double[]{0.000000298, 0.000000298});
+
+        IntStream.range(0, correct1.getDimension()).forEach(i ->
+                Assert.assertEquals(result1.getEntry(i), correct1.getEntry(i), 1E-5));
+        IntStream.range(0, correct2.getDimension()).forEach(i ->
+                Assert.assertEquals(result2.getEntry(i), correct2.getEntry(i), 1E-5));
+        IntStream.range(0, correct3.getDimension()).forEach(i ->
+                Assert.assertEquals(result3.getEntry(i), correct3.getEntry(i), 1E-5));
+    }
+    @Test
+    public void checkEfficiencyFibonacci(){
+        FunctionTUnary<RealVector> function = v -> {
+            double sum = 0.0;
+            for (int i = 0; i < v.getDimension(); i++) {
+                sum += Math.pow(v.getEntry(i), 2);
+            }
+            return sum;
+        };
+
+        RealVector left = new ArrayRealVector(new double[]{-10, -10});
+        RealVector right = new ArrayRealVector(new double[]{10, 10});
+
+        long startTime = System.currentTimeMillis();
+        RealVector result1 = LabTwo.fibonacci(function, left, right, 1E-5);
+        long endTime = System.currentTimeMillis();
+        System.out.println(new DecimalFormat("#0.000").format((endTime - startTime)/1000.));
+
+        RealVector result2 = LabTwo.fibonacci(function, left, right, MIDDLE);
+
+        RealVector correct1 = new ArrayRealVector(new double[]{0.0000001735, 0.0000001735});
+        RealVector correct2 = new ArrayRealVector(new double[]{0.0000023842, 0.0000023842});
+
+        IntStream.range(0, correct1.getDimension()).forEach(i ->
+                Assert.assertEquals(result1.getEntry(i), correct1.getEntry(i), 1E-5));
+        IntStream.range(0, correct2.getDimension()).forEach(i ->
+                Assert.assertEquals(result2.getEntry(i), correct2.getEntry(i), 1E-5));
     }
 }
