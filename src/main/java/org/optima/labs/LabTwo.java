@@ -1,6 +1,5 @@
 package org.optima.labs;
 
-import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.RealVector;
 import org.optima.collections.DoubleVector;
 import org.optima.exceptions.MismatchLengthVectorsException;
@@ -9,7 +8,8 @@ import org.optima.kit.NumericCommon;
 import org.optima.utils.InterMethods;
 import org.optima.utils.NumCharacteristics;
 
-import java.util.function.DoubleUnaryOperator;
+import static org.optima.utils.DefaultNum.REVERSE_GRP;
+import static org.optima.utils.DetailedMethods.closestFibonacciPair;
 
 public class LabTwo {
     public static DoubleVector dichotomyCore(FunctionTUnary<DoubleVector> function, DoubleVector left, DoubleVector right,
@@ -63,8 +63,8 @@ public class LabTwo {
         return InterMethods.customParam(function, left, right, levelEps, levelIter, LabTwo::dichotomyMy);
     }
 
-    public static DoubleVector goldenRatio(FunctionTUnary<DoubleVector> function, DoubleVector left, DoubleVector right,
-                                           double eps, int maxIterations) {
+    public static DoubleVector goldenRatioCore(FunctionTUnary<DoubleVector> function, DoubleVector left, DoubleVector right,
+                                               double eps, int maxIterations) {
         DoubleVector lhs = new DoubleVector(left);
         DoubleVector rhs = new DoubleVector(right);
         DoubleVector x_l = DoubleVector.sub(rhs, DoubleVector.mul(DoubleVector.sub(rhs, lhs), NumericCommon.PSI));
@@ -92,20 +92,39 @@ public class LabTwo {
                 f_l = function.apply(x_l);
             }
         }
-        if (NumericCommon.SHOW_ZERO_ORDER_METHODS_DEBUG_LOG)
-        {
-            System.out.printf("goldenRatio::function arg range    : %s\n", DoubleVector.sub(rhs, lhs).magnitude());
-            System.out.printf("goldenRatio::function probes count : %s\n", 2 + iteration);
-        }
         return DoubleVector.add(rhs, lhs).mul(0.5);
     }
 
-    public static DoubleVector goldenRatio(FunctionTUnary<DoubleVector> function, DoubleVector left, DoubleVector right, double eps) {
-        return goldenRatio(function, left, right, eps, NumericCommon.ITERATIONS_COUNT_HIGH);
+    public static RealVector goldenRatioMy(FunctionTUnary<RealVector> function, RealVector left, RealVector right,
+                                           double eps, int maxIterations) {
+        int iteration = 0;
+
+        while (iteration < maxIterations && left.getDistance(right) > eps) {
+            RealVector leftBoundary = right.subtract(right.subtract(left).mapMultiply(REVERSE_GRP));
+            RealVector rightBoundary = left.add(right.subtract(left).mapMultiply(REVERSE_GRP));
+
+            double fRootLeft = function.apply(leftBoundary);
+            double fRootRight = function.apply(rightBoundary);
+
+            if (fRootLeft >= fRootRight)
+                left = leftBoundary;
+            else
+                right = rightBoundary;
+
+            iteration++;
+        }
+
+        return left.add(right).mapMultiply(0.5);
     }
 
-    public static DoubleVector goldenRatio(FunctionTUnary<DoubleVector> f, DoubleVector left, DoubleVector right) {
-        return goldenRatio(f, left, right, NumericCommon.NUMERIC_ACCURACY_MIDDLE, NumericCommon.ITERATIONS_COUNT_HIGH);
+    public static RealVector goldenRatioMy(FunctionTUnary<RealVector> function, RealVector left, RealVector right,
+                                         double eps, NumCharacteristics levelIter) {
+        return InterMethods.customParam(function, left, right, eps, levelIter, LabTwo::goldenRatioMy);
+    }
+
+    public static RealVector goldenRatioMy(FunctionTUnary<RealVector> function, RealVector left, RealVector right,
+                                         NumCharacteristics levelEps, NumCharacteristics levelIter) {
+        return InterMethods.customParam(function, left, right, levelEps, levelIter, LabTwo::goldenRatioMy);
     }
 
     public static DoubleVector fibonacci(FunctionTUnary<DoubleVector> function, DoubleVector left, DoubleVector right, double eps) {
@@ -150,17 +169,35 @@ public class LabTwo {
             fib_2 = fib_1;
             fib_1 = fib_t;
         }
-        if (NumericCommon.SHOW_ZERO_ORDER_METHODS_DEBUG_LOG)
-        {
-            System.out.printf("goldenRatio::function arg range    : %s\n", DoubleVector.sub(rhs, lhs).magnitude());
-            System.out.printf("goldenRatio::function probes count : %s\n", 2 + iterations);
-        }
         return DoubleVector.add(rhs, lhs).mul(0.5);
     }
 
-    public static DoubleVector fibonacci(FunctionTUnary<DoubleVector> function, DoubleVector left, DoubleVector right) {
-        return fibonacci(function, left, right, NumericCommon.NUMERIC_ACCURACY_MIDDLE);
+    public static RealVector fibonacciMy(FunctionTUnary<RealVector> function, RealVector left, RealVector right,
+                                         double eps) {
+        RealVector a = left.copy();
+        RealVector b = right.copy();
+        double delta;
+        double[] fib_pair = closestFibonacciPair((b.subtract(a)).getNorm() / eps);
+        double fib_num_1 = fib_pair[0];
+        double fib_num_2 = fib_pair[1];
+
+        while (fib_num_1 != fib_num_2 && (b.subtract(a)).getNorm() > eps) {
+            delta = (b.subtract(a)).getNorm();
+            double temp = fib_num_2 - fib_num_1;
+            RealVector x1 = a.add(b.subtract(a).mapMultiply(temp / fib_num_2));
+            RealVector x2 = a.add(b.subtract(a).mapMultiply(fib_num_1 / fib_num_2));
+            fib_num_2 = fib_num_1;
+            fib_num_1 = temp;
+//            if (function.apply(x1).getNorm() < function.apply(x2).getNorm()) {
+//                b = x2;
+//            } else {
+//                a = x1;
+//            }
+        }
+
+        return a.add(b).mapMultiply(0.5);
     }
+
 
     public static DoubleVector perCordDescend(FunctionTUnary<DoubleVector> function, DoubleVector xStart, double eps, int maxIterations)  {
         DoubleVector x_0 = new DoubleVector(xStart);
