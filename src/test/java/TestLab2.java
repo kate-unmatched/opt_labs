@@ -146,4 +146,36 @@ public class TestLab2 {
         IntStream.range(0, correct2.getDimension()).forEach(i ->
                 Assert.assertEquals(result2.getEntry(i), correct2.getEntry(i), 1E-5));
     }
+
+    @Test
+    public void checkEfficiencyPerCordDescend(){
+        FunctionTUnary<RealVector> function = v -> {
+            double sum = 0.0;
+            for (int i = 0; i < v.getDimension(); i++) {
+                sum += Math.pow(v.getEntry(i), 2);
+            }
+            return sum;
+        };
+
+        RealVector xStart = new ArrayRealVector(new double[]{10, 10});
+
+        long startTime = System.currentTimeMillis();
+        RealVector result1 = LabTwo.perCordDescend(function, xStart,1E-5, 100);
+        long endTime = System.currentTimeMillis();
+        System.out.println(new DecimalFormat("#0.0000").format((endTime - startTime)/1000.));
+
+        RealVector result2 = LabTwo.perCordDescend(function, xStart,1E-5, MIDDLE);
+        RealVector result3 = LabTwo.perCordDescend(function, xStart,MIDDLE, LOW);
+
+        RealVector correct1 = new ArrayRealVector(new double[]{0.0000002053, 0.0000002053});
+        RealVector correct2 = new ArrayRealVector(new double[]{0.0000023842, 0.0000023842});
+        RealVector correct3 = new ArrayRealVector(new double[]{0.000000298, 0.000000298});
+
+        IntStream.range(0, correct1.getDimension()).forEach(i ->
+                Assert.assertEquals(result1.getEntry(i), correct1.getEntry(i), 1E-5));
+        IntStream.range(0, correct2.getDimension()).forEach(i ->
+                Assert.assertEquals(result2.getEntry(i), correct2.getEntry(i), 1E-5));
+        IntStream.range(0, correct3.getDimension()).forEach(i ->
+                Assert.assertEquals(result3.getEntry(i), correct3.getEntry(i), 1E-5));
+    }
 }

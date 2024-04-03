@@ -14,7 +14,7 @@ import static org.optima.utils.DetailedMethods.closestFibonacciPair;
 
 public class LabTwo {
     public static DoubleVector dichotomyCore(FunctionTUnary<DoubleVector> function, DoubleVector left, DoubleVector right,
-                                      double eps, int maxIterations) {
+                                             double eps, int maxIterations) {
         DoubleVector lhs = new DoubleVector(left);
         DoubleVector rhs = new DoubleVector(right);
 
@@ -42,7 +42,7 @@ public class LabTwo {
         int iteration = 0;
         RealVector midpoint = left.add(right).mapMultiply(.5);
 
-        while (iteration < maxIterations && right.subtract(left).getNorm() > eps) {
+        while (iteration < maxIterations && right.subtract(left).getNorm() > 2 * eps) {
             if (function.apply(midpoint.mapAdd(eps)) > function.apply(midpoint.mapSubtract(eps))) {
                 right = midpoint;
             } else {
@@ -52,7 +52,7 @@ public class LabTwo {
             iteration++;
         }
 
-        System.out.printf("Dichotomy iterations number : %s\n", iteration + 1);
+        System.out.printf("Dichotomy number calling function: %s\n", (iteration + 1) * 2);
         return midpoint;
     }
 
@@ -73,22 +73,29 @@ public class LabTwo {
 
         int iteration = 0;
 
-        while (iteration < maxIterations && left.getDistance(right) > eps) {
-            RealVector leftBoundary = right.subtract(right.subtract(left).mapMultiply(REVERSE_GRP));
-            RealVector rightBoundary = left.add(right.subtract(left).mapMultiply(REVERSE_GRP));
+        RealVector leftBoundary = right.subtract(right.subtract(left).mapMultiply(REVERSE_GRP));
+        RealVector rightBoundary = left.add(right.subtract(left).mapMultiply(REVERSE_GRP));
+        double fRootLeft = function.apply(leftBoundary);
+        double fRootRight = function.apply(rightBoundary);
 
-            double fRootLeft = function.apply(leftBoundary);
-            double fRootRight = function.apply(rightBoundary);
-
-            if (fRootLeft >= fRootRight)
+        while (iteration++ < maxIterations && left.getDistance(right) > 2 * eps) {
+            if (fRootLeft > fRootRight) {
                 left = leftBoundary;
-            else
+                leftBoundary = rightBoundary;
+                fRootLeft = fRootRight;
+                rightBoundary = left.add(right.subtract(left).mapMultiply(REVERSE_GRP));
+                fRootRight = function.apply(rightBoundary);
+            } else {
                 right = rightBoundary;
-
-            iteration++;
+                rightBoundary = leftBoundary;
+                fRootRight = fRootLeft;
+                leftBoundary = right.subtract(right.subtract(left).mapMultiply(REVERSE_GRP));
+                fRootLeft = function.apply(leftBoundary);
+            }
         }
 
-        System.out.printf("GoldenRatio iterations number : %s\n", iteration + 1);
+        System.out.printf("GoldenRatio number calling function : %s\n", iteration + 2);
+        System.out.printf("GoldenRatio argument range          : %s\n", left.getDistance(right));
         return left.add(right).mapMultiply(0.5);
     }
 
@@ -132,7 +139,7 @@ public class LabTwo {
     }
 
     public static RealVector fibonacci(FunctionTUnary<RealVector> function, RealVector left, RealVector right,
-                                         NumCharacteristics levelEps) {
+                                       NumCharacteristics levelEps) {
         return InterMethods.customParam(function, left, right, levelEps, LabTwo::fibonacci);
     }
 
@@ -168,12 +175,12 @@ public class LabTwo {
     }
 
     public static RealVector perCordDescend(FunctionTUnary<RealVector> function, RealVector xStart,
-                                         double eps, NumCharacteristics levelIter) {
+                                            double eps, NumCharacteristics levelIter) {
         return InterMethods.customParam2(function, xStart, eps, levelIter, LabTwo::perCordDescend);
     }
 
     public static RealVector perCordDescend(FunctionTUnary<RealVector> function, RealVector xStart,
-                                         NumCharacteristics levelEps, NumCharacteristics levelIter) {
+                                            NumCharacteristics levelEps, NumCharacteristics levelIter) {
         return InterMethods.customParam2(function, xStart, levelEps, levelIter, LabTwo::perCordDescend);
     }
 }
