@@ -2,7 +2,6 @@ package org.optima.labs;
 
 import org.apache.commons.math3.linear.RealVector;
 import org.apache.commons.math3.util.FastMath;
-import org.optima.collections.DoubleVector;
 import org.optima.exceptions.MismatchLengthVectorsException;
 import org.optima.kit.FunctionTUnary;
 import org.optima.kit.NumericCommon;
@@ -13,29 +12,9 @@ import static org.optima.utils.DefaultNum.REVERSE_GRP;
 import static org.optima.utils.DetailedMethods.closestFibonacciPair;
 
 public class LabTwo {
-    public static DoubleVector dichotomyCore(FunctionTUnary<DoubleVector> function, DoubleVector left, DoubleVector right,
+
+    public static RealVector dichotomyVector(FunctionTUnary<RealVector> function, RealVector left, RealVector right,
                                              double eps, int maxIterations) {
-        DoubleVector lhs = new DoubleVector(left);
-        DoubleVector rhs = new DoubleVector(right);
-
-        DoubleVector x_c, root = DoubleVector.direction(lhs, rhs).mul(eps);
-        int iteration = 0;
-
-        while (iteration < maxIterations && DoubleVector.sub(rhs, lhs).magnitude() > eps) {
-            x_c = DoubleVector.add(rhs, lhs).mul(.5);
-            if (function.apply(DoubleVector.add(x_c, root)) < function.apply(DoubleVector.sub(x_c, root)))
-                rhs = x_c;
-            else
-                lhs = x_c;
-
-            iteration++;
-        }
-
-        return DoubleVector.add(rhs, lhs).mul(0.5);
-    }
-
-    public static RealVector dichotomyMy(FunctionTUnary<RealVector> function, RealVector left, RealVector right,
-                                         double eps, int maxIterations) {
         if (left.getDimension() != right.getDimension())
             throw new MismatchLengthVectorsException(left.getDimension(), right.getDimension());
 
@@ -52,22 +31,23 @@ public class LabTwo {
             iteration++;
         }
 
-        System.out.printf("Dichotomy number calling function: %s\n", (iteration + 1) * 2);
+        System.out.printf("Dichotomy number calling function : %s\n", iteration + 2);
+        System.out.printf("Dichotomy argument range          : %s\n", left.getDistance(right));
         return midpoint;
     }
 
-    public static RealVector dichotomyMy(FunctionTUnary<RealVector> function, RealVector left, RealVector right,
-                                         double eps, NumCharacteristics levelIter) {
-        return InterMethods.customParam(function, left, right, eps, levelIter, LabTwo::dichotomyMy);
+    public static RealVector dichotomyVector(FunctionTUnary<RealVector> function, RealVector left, RealVector right,
+                                             double eps, NumCharacteristics levelIter) {
+        return InterMethods.customParam(function, left, right, eps, levelIter, LabTwo::dichotomyVector);
     }
 
-    public static RealVector dichotomyMy(FunctionTUnary<RealVector> function, RealVector left, RealVector right,
-                                         NumCharacteristics levelEps, NumCharacteristics levelIter) {
-        return InterMethods.customParam(function, left, right, levelEps, levelIter, LabTwo::dichotomyMy);
+    public static RealVector dichotomyVector(FunctionTUnary<RealVector> function, RealVector left, RealVector right,
+                                             NumCharacteristics levelEps, NumCharacteristics levelIter) {
+        return InterMethods.customParam(function, left, right, levelEps, levelIter, LabTwo::dichotomyVector);
     }
 
-    public static RealVector goldenRatio(FunctionTUnary<RealVector> function, RealVector left, RealVector right,
-                                         double eps, int maxIterations) {
+    public static RealVector goldenRatioVector(FunctionTUnary<RealVector> function, RealVector left, RealVector right,
+                                               double eps, int maxIterations) {
         if (left.getDimension() != right.getDimension())
             throw new MismatchLengthVectorsException(left.getDimension(), right.getDimension());
 
@@ -99,18 +79,18 @@ public class LabTwo {
         return left.add(right).mapMultiply(0.5);
     }
 
-    public static RealVector goldenRatio(FunctionTUnary<RealVector> function, RealVector left, RealVector right,
-                                         double eps, NumCharacteristics levelIter) {
-        return InterMethods.customParam(function, left, right, eps, levelIter, LabTwo::goldenRatio);
+    public static RealVector goldenRatioVector(FunctionTUnary<RealVector> function, RealVector left, RealVector right,
+                                               double eps, NumCharacteristics levelIter) {
+        return InterMethods.customParam(function, left, right, eps, levelIter, LabTwo::goldenRatioVector);
     }
 
-    public static RealVector goldenRatio(FunctionTUnary<RealVector> function, RealVector left, RealVector right,
-                                         NumCharacteristics levelEps, NumCharacteristics levelIter) {
-        return InterMethods.customParam(function, left, right, levelEps, levelIter, LabTwo::goldenRatio);
+    public static RealVector goldenRatioVector(FunctionTUnary<RealVector> function, RealVector left, RealVector right,
+                                               NumCharacteristics levelEps, NumCharacteristics levelIter) {
+        return InterMethods.customParam(function, left, right, levelEps, levelIter, LabTwo::goldenRatioVector);
     }
 
-    public static RealVector fibonacci(FunctionTUnary<RealVector> function, RealVector left, RealVector right,
-                                       double eps) {
+    public static RealVector fibonacciVector(FunctionTUnary<RealVector> function, RealVector left, RealVector right,
+                                             double eps) {
         if (left.getDimension() != right.getDimension())
             throw new MismatchLengthVectorsException(left.getDimension(), right.getDimension());
 
@@ -134,13 +114,13 @@ public class LabTwo {
                 a = x1;
             }
         }
-
+        System.out.printf("Fibonacci argument range          : %s\n", a.getDistance(b));
         return a.add(b).mapMultiply(0.5);
     }
 
-    public static RealVector fibonacci(FunctionTUnary<RealVector> function, RealVector left, RealVector right,
-                                       NumCharacteristics levelEps) {
-        return InterMethods.customParam(function, left, right, levelEps, LabTwo::fibonacci);
+    public static RealVector fibonacciVector(FunctionTUnary<RealVector> function, RealVector left, RealVector right,
+                                             NumCharacteristics levelEps) {
+        return InterMethods.customParam(function, left, right, levelEps, LabTwo::fibonacciVector);
     }
 
     public static RealVector perCordDescend(FunctionTUnary<RealVector> function, RealVector xStart, double eps, int maxIterations) {
@@ -157,7 +137,7 @@ public class LabTwo {
             y_1 = function.apply(x_1);
             x_1.setEntry(coordinateId, y_0 > y_1 ? x_1.getEntry(coordinateId) + step : x_1.getEntry(coordinateId) - step);
             x_i = x_0.getEntry(coordinateId);
-            x_1 = dichotomyMy(function, x_0, x_1, eps, maxIterations);
+            x_1 = dichotomyVector(function, x_0, x_1, eps, maxIterations);
             x_0 = x_1.copy();
             if (FastMath.abs(x_1.getEntry(coordinateId) - x_i) < eps) {
                 optCoordinatesCount++;
