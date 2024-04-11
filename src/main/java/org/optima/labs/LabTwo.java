@@ -5,9 +5,12 @@ import org.apache.commons.math3.util.FastMath;
 import org.optima.exceptions.MismatchLengthVectorsException;
 import org.optima.kit.FunctionTUnary;
 import org.optima.kit.NumericCommon;
+import org.optima.utils.GenericIterFunction;
+import org.optima.utils.GenericOneVectorFunction;
 import org.optima.utils.InterMethods;
 import org.optima.utils.NumCharacteristics;
 
+import static java.lang.Math.pow;
 import static org.optima.utils.DefaultNum.REVERSE_GRP;
 import static org.optima.utils.DetailedMethods.closestFibonacciPair;
 
@@ -20,9 +23,9 @@ public class LabTwo {
 
         int iteration = 0;
         RealVector midpoint = left.add(right).mapMultiply(.5);
-
-        while (iteration < maxIterations && right.subtract(left).getNorm() > 2 * eps) {
-            if (function.apply(midpoint.mapAdd(eps)) > function.apply(midpoint.mapSubtract(eps))) {
+        RealVector direction = right.subtract(left).unitVector().mapMultiplyToSelf(eps);
+        while (iteration < maxIterations && left.getDistance(right) > 2 * eps) {
+            if (function.apply(midpoint.subtract(direction)) < function.apply(midpoint.add(direction))) {
                 right = midpoint;
             } else {
                 left = midpoint;
@@ -31,8 +34,9 @@ public class LabTwo {
             iteration++;
         }
 
-        System.out.printf("Dichotomy number calling function : %s\n", iteration + 2);
+        System.out.printf("Dichotomy number calling function : %s\n", iteration * 2);
         System.out.printf("Dichotomy argument range          : %s\n", left.getDistance(right));
+        System.out.printf("Dichotomy root > %s \n", midpoint.toString());
         return midpoint;
     }
 
@@ -74,9 +78,11 @@ public class LabTwo {
             }
         }
 
+        RealVector root = left.add(right).mapMultiply(0.5);
         System.out.printf("GoldenRatio number calling function : %s\n", iteration + 2);
         System.out.printf("GoldenRatio argument range          : %s\n", left.getDistance(right));
-        return left.add(right).mapMultiply(0.5);
+        System.out.printf("GoldenRatio root > %s \n", root.toString());
+        return root;
     }
 
     public static RealVector goldenRatioVector(FunctionTUnary<RealVector> function, RealVector left, RealVector right,
@@ -94,28 +100,49 @@ public class LabTwo {
         if (left.getDimension() != right.getDimension())
             throw new MismatchLengthVectorsException(left.getDimension(), right.getDimension());
 
-        RealVector a = left.copy();
-        RealVector b = right.copy();
-        double delta;
-        double[] fib_pair = closestFibonacciPair((b.subtract(a)).getNorm() / eps);
-        double fib_num_1 = fib_pair[0];
-        double fib_num_2 = fib_pair[1];
-
-        while (fib_num_1 != fib_num_2 && (b.subtract(a)).getNorm() > eps) {
-            delta = (b.subtract(a)).getNorm();
-            double temp = fib_num_2 - fib_num_1;
-            RealVector x1 = a.add(b.subtract(a).mapMultiply(temp / fib_num_2));
-            RealVector x2 = a.add(b.subtract(a).mapMultiply(fib_num_1 / fib_num_2));
-            fib_num_2 = fib_num_1;
-            fib_num_1 = temp;
-            if (function.apply(x1) < function.apply(x2)) {
-                b = x2;
-            } else {
-                a = x1;
-            }
+        RealVector lhs = left.copy();
+        RealVector rhs = right.copy();
+        double fib_num_1 = 1.0, fib_num_2 = 1.0, ft, delta = (rhs.subtract(lhs)).getNorm() / eps;
+        int iterations = 0;
+        while (fib_num_2 < delta) {
+            ft = fib_num_1;
+            fib_num_1 = fib_num_2;
+            fib_num_2 += ft;
+            iterations++;
         }
-        System.out.printf("Fibonacci argument range          : %s\n", a.getDistance(b));
-        return a.add(b).mapMultiply(0.5);
+        RealVector v_left = lhs.add(rhs.subtract(lhs).mapMultiply((fib_num_2 - fib_num_1) / fib_num_2));
+        RealVector v_right = lhs.add(rhs.subtract(lhs).mapMultiply(fib_num_1 / fib_num_2));
+        double f_val_left = function.apply(v_left);
+        double f_val_right = function.apply(v_right);
+        ft = fib_num_2 - fib_num_1;
+        fib_num_2 = fib_num_1;
+        fib_num_1 = ft;
+
+        int iter = 0;
+        while (iter++ < iterations) {
+            if (f_val_left > f_val_right) {
+                lhs = v_left;
+                v_left = v_right;
+                f_val_left = f_val_right;
+                v_right = lhs.add(rhs.subtract(lhs).mapMultiply(fib_num_1 / fib_num_2));
+                f_val_right = function.apply(v_right);
+            } else {
+                rhs = v_right;
+                v_right = v_left;
+                f_val_right = f_val_left;
+                v_left = lhs.add(rhs.subtract(lhs).mapMultiply((fib_num_2 - fib_num_1) / fib_num_2));
+                f_val_left = function.apply(v_left);
+            }
+            ft = fib_num_2 - fib_num_1;
+            fib_num_2 = fib_num_1;
+            fib_num_1 = ft;
+            System.out.printf("Fibonacci argument current range          : %s\n", lhs.getDistance(rhs));
+        }
+        RealVector root = lhs.add(rhs).mapMultiply(0.5);
+        System.out.printf("Fibonacci number calling function : %s\n", iterations + 2);
+        System.out.printf("Fibonacci argument range          : %s\n", lhs.getDistance(rhs));
+        System.out.printf("Fibonacci root > %s\n", root.toString());
+        return root;
     }
 
     public static RealVector fibonacciVector(FunctionTUnary<RealVector> function, RealVector left, RealVector right,
@@ -137,20 +164,22 @@ public class LabTwo {
             y_1 = function.apply(x_1);
             x_1.setEntry(coordinateId, y_0 > y_1 ? x_1.getEntry(coordinateId) + step : x_1.getEntry(coordinateId) - step);
             x_i = x_0.getEntry(coordinateId);
-            x_1 = dichotomyVector(function, x_0, x_1, eps, maxIterations);
+            x_1 = fibonacciVector(function, x_0, x_1, eps);
             x_0 = x_1.copy();
-            if (FastMath.abs(x_1.getEntry(coordinateId) - x_i) < eps) {
+            if (FastMath.abs(x_1.getEntry(coordinateId) - x_i) < 2 * eps) {
                 optCoordinatesCount++;
                 if (optCoordinatesCount == x_1.getDimension()) {
                     if (NumericCommon.SHOW_DEBUG_LOG) {
                         System.out.printf("per cord descend iterations number : %s\n", iteration + 1);
                     }
+                    System.out.printf("Per cord root > %s\n", x_0.toString());
                     return x_0;
                 }
                 continue;
             }
             optCoordinatesCount = 0;
         }
+        System.out.printf("Per cord root > %s\n", x_0.toString());
         return x_0;
     }
 

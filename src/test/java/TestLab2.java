@@ -7,6 +7,7 @@ import org.optima.kit.FunctionTUnary;
 import org.optima.labs.LabTwo;
 
 import java.text.DecimalFormat;
+import java.util.Random;
 import java.util.stream.IntStream;
 
 import static org.optima.utils.NumCharacteristics.MIDDLE;
@@ -132,7 +133,7 @@ public class TestLab2 {
         FunctionTUnary<RealVector> function = v -> {
             double sum = 0.0;
             for (int i = 0; i < v.getDimension(); i++) {
-                sum += Math.pow(v.getEntry(i), 2);
+                sum += Math.pow(i + 1 - v.getEntry(i), 2);
             }
             return sum;
         };
@@ -148,9 +149,9 @@ public class TestLab2 {
         RealVector result2 = LabTwo.perCordDescend(function, xStart,1E-5, MIDDLE);
         RealVector result3 = LabTwo.perCordDescend(function, xStart,MIDDLE, LOW);
 
-        RealVector correct1 = new ArrayRealVector(new double[]{0.0000002053, 0.0000002053});
-        RealVector correct2 = new ArrayRealVector(new double[]{0.0000023842, 0.0000023842});
-        RealVector correct3 = new ArrayRealVector(new double[]{0.000000298, 0.000000298});
+        RealVector correct1 = new ArrayRealVector(new double[]{1.0, 2.0});
+        RealVector correct2 = new ArrayRealVector(new double[]{1.0, 2.0});
+        RealVector correct3 = new ArrayRealVector(new double[]{1.0, 2.0});
 
         IntStream.range(0, correct1.getDimension()).forEach(i ->
                 Assert.assertEquals(result1.getEntry(i), correct1.getEntry(i), 1E-5));
@@ -158,5 +159,27 @@ public class TestLab2 {
                 Assert.assertEquals(result2.getEntry(i), correct2.getEntry(i), 1E-5));
         IntStream.range(0, correct3.getDimension()).forEach(i ->
                 Assert.assertEquals(result3.getEntry(i), correct3.getEntry(i), 1E-5));
+    }
+
+    @Test
+    public void checkPerCordDescend16(){
+        FunctionTUnary<RealVector> function = v -> {
+            double sum = 0.0;
+            for (int i = 0; i < v.getDimension(); i++) {
+                sum += Math.pow(v.getEntry(i), 2)-2;
+            }
+            return sum;
+        };
+        Random random = new Random();
+        double[] values = new double[32];
+
+        for (int i = 0; i < values.length; i++) {
+            values[i] = -50 + (100 * random.nextDouble());
+        }
+
+        RealVector xStart = new ArrayRealVector(values);
+
+        RealVector result = LabTwo.perCordDescend(function, xStart,1E-5, 100);
+        System.out.println("dc");
     }
 }
