@@ -4,17 +4,12 @@ import org.apache.commons.math3.linear.RealVector;
 import org.apache.commons.math3.util.FastMath;
 import org.optima.exceptions.MismatchLengthVectorsException;
 import org.optima.kit.FunctionTUnary;
-import org.optima.kit.NumericCommon;
-import org.optima.utils.GenericIterFunction;
-import org.optima.utils.GenericOneVectorFunction;
 import org.optima.utils.InterMethods;
 import org.optima.utils.NumCharacteristics;
 
-import static java.lang.Math.pow;
 import static org.optima.utils.DefaultNum.REVERSE_GRP;
-import static org.optima.utils.DetailedMethods.closestFibonacciPair;
 
-public class LabTwo {
+public class Lab2 {
 
     public static RealVector dichotomyVector(FunctionTUnary<RealVector> function, RealVector left, RealVector right,
                                              double eps, int maxIterations) {
@@ -42,12 +37,12 @@ public class LabTwo {
 
     public static RealVector dichotomyVector(FunctionTUnary<RealVector> function, RealVector left, RealVector right,
                                              double eps, NumCharacteristics levelIter) {
-        return InterMethods.customParam(function, left, right, eps, levelIter, LabTwo::dichotomyVector);
+        return InterMethods.customParam(function, left, right, eps, levelIter, Lab2::dichotomyVector);
     }
 
     public static RealVector dichotomyVector(FunctionTUnary<RealVector> function, RealVector left, RealVector right,
                                              NumCharacteristics levelEps, NumCharacteristics levelIter) {
-        return InterMethods.customParam(function, left, right, levelEps, levelIter, LabTwo::dichotomyVector);
+        return InterMethods.customParam(function, left, right, levelEps, levelIter, Lab2::dichotomyVector);
     }
 
     public static RealVector goldenRatioVector(FunctionTUnary<RealVector> function, RealVector left, RealVector right,
@@ -87,12 +82,12 @@ public class LabTwo {
 
     public static RealVector goldenRatioVector(FunctionTUnary<RealVector> function, RealVector left, RealVector right,
                                                double eps, NumCharacteristics levelIter) {
-        return InterMethods.customParam(function, left, right, eps, levelIter, LabTwo::goldenRatioVector);
+        return InterMethods.customParam(function, left, right, eps, levelIter, Lab2::goldenRatioVector);
     }
 
     public static RealVector goldenRatioVector(FunctionTUnary<RealVector> function, RealVector left, RealVector right,
                                                NumCharacteristics levelEps, NumCharacteristics levelIter) {
-        return InterMethods.customParam(function, left, right, levelEps, levelIter, LabTwo::goldenRatioVector);
+        return InterMethods.customParam(function, left, right, levelEps, levelIter, Lab2::goldenRatioVector);
     }
 
     public static RealVector fibonacciVector(FunctionTUnary<RealVector> function, RealVector left, RealVector right,
@@ -147,7 +142,7 @@ public class LabTwo {
 
     public static RealVector fibonacciVector(FunctionTUnary<RealVector> function, RealVector left, RealVector right,
                                              NumCharacteristics levelEps) {
-        return InterMethods.customParam(function, left, right, levelEps, LabTwo::fibonacciVector);
+        return InterMethods.customParam(function, left, right, levelEps, Lab2::fibonacciVector);
     }
 
     public static RealVector perCordDescend(FunctionTUnary<RealVector> function, RealVector xStart, double eps, int maxIterations) {
@@ -169,9 +164,6 @@ public class LabTwo {
             if (FastMath.abs(x_1.getEntry(coordinateId) - x_i) < 2 * eps) {
                 optCoordinatesCount++;
                 if (optCoordinatesCount == x_1.getDimension()) {
-                    if (NumericCommon.SHOW_DEBUG_LOG) {
-                        System.out.printf("per cord descend iterations number : %s\n", iteration + 1);
-                    }
                     System.out.printf("Per cord root > %s\n", x_0.toString());
                     return x_0;
                 }
@@ -185,11 +177,11 @@ public class LabTwo {
 
     public static RealVector perCordDescend(FunctionTUnary<RealVector> function, RealVector xStart,
                                             double eps, NumCharacteristics levelIter) {
-        return InterMethods.customParam2(function, xStart, eps, levelIter, LabTwo::perCordDescend);
+        return InterMethods.customParam2(function, xStart, eps, levelIter, Lab2::perCordDescend);
     }
 
     public static RealVector perCordDescend(FunctionTUnary<RealVector> function, RealVector xStart,
                                             NumCharacteristics levelEps, NumCharacteristics levelIter) {
-        return InterMethods.customParam2(function, xStart, levelEps, levelIter, LabTwo::perCordDescend);
+        return InterMethods.customParam2(function, xStart, levelEps, levelIter, Lab2::perCordDescend);
     }
 }

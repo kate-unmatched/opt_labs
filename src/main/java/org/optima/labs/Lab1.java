@@ -10,7 +10,7 @@ import java.util.function.DoubleUnaryOperator;
 
 import static org.optima.utils.DefaultNum.REVERSE_GRP;
 
-public class LabOne {
+public class Lab1 {
     public static Double dichotomy(DoubleUnaryOperator function, double x1, double x2, double eps, int maxIterations) {
 
         if (x1 > x2) {
@@ -41,12 +41,12 @@ public class LabOne {
 
     public static Double dichotomy(DoubleUnaryOperator function, double x1, double x2,
                                    double eps, NumCharacteristics levelIter) {
-        return InterMethods.customParam(function, x1, x2, eps, levelIter, LabOne::dichotomy);
+        return InterMethods.customParam(function, x1, x2, eps, levelIter, Lab1::dichotomy);
     }
 
     public static Double dichotomy(DoubleUnaryOperator function, double x1, double x2,
                                    NumCharacteristics levelEps, NumCharacteristics levelIter) {
-        return InterMethods.customParam(function, x1, x2, levelEps, levelIter, LabOne::dichotomy);
+        return InterMethods.customParam(function, x1, x2, levelEps, levelIter, Lab1::dichotomy);
     }
 
     public static Double goldenRatioMinimum(DoubleUnaryOperator function, double x1, double x2, double eps, int maxIterations) {
@@ -80,12 +80,12 @@ public class LabOne {
 
     public static double goldenRatioMinimum(DoubleUnaryOperator function, double x1, double x2,
                                    double eps, NumCharacteristics levelIter) {
-        return InterMethods.customParam(function, x1, x2, eps, levelIter, LabOne::goldenRatioMinimum);
+        return InterMethods.customParam(function, x1, x2, eps, levelIter, Lab1::goldenRatioMinimum);
     }
 
     public static double goldenRatioMinimum(DoubleUnaryOperator function, double x1, double x2,
                                    NumCharacteristics levelEps, NumCharacteristics levelIter) {
-        return InterMethods.customParam(function, x1, x2, levelEps, levelIter, LabOne::goldenRatioMinimum);
+        return InterMethods.customParam(function, x1, x2, levelEps, levelIter, Lab1::goldenRatioMinimum);
     }
 
     public static double goldenRatioMaximum(DoubleUnaryOperator function, double x1, double x2, double eps, int maxIterations) {
@@ -119,12 +119,12 @@ public class LabOne {
 
     public static double goldenRatioMaximum(DoubleUnaryOperator function, double x1, double x2,
                                             double eps, NumCharacteristics levelIter) {
-        return InterMethods.customParam(function, x1, x2, eps, levelIter, LabOne::goldenRatioMaximum);
+        return InterMethods.customParam(function, x1, x2, eps, levelIter, Lab1::goldenRatioMaximum);
     }
 
     public static double goldenRatioMaximum(DoubleUnaryOperator function, double x1, double x2,
                                             NumCharacteristics levelEps, NumCharacteristics levelIter) {
-        return InterMethods.customParam(function, x1, x2, levelEps, levelIter, LabOne::goldenRatioMaximum);
+        return InterMethods.customParam(function, x1, x2, levelEps, levelIter, Lab1::goldenRatioMaximum);
     }
 
     public static double fibonacci(DoubleUnaryOperator function, double x1, double x2, double eps) {
@@ -157,6 +157,6 @@ public class LabOne {
     }
 
     public static double fibonacci(DoubleUnaryOperator function, double x1, double x2, NumCharacteristics levelEps) {
-        return InterMethods.customParam(function, x1, x2, levelEps, LabOne::fibonacci);
+        return InterMethods.customParam(function, x1, x2, levelEps, Lab1::fibonacci);
     }
 }
