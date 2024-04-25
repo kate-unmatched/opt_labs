@@ -22,12 +22,18 @@ public class DetailedMethods {
 
     public static RealVector calculateGradient(FunctionTUnary<RealVector> function, RealVector x, double eps) {
         double[] gradient = new double[x.getDimension()];
+
         for (int i = 0; i < x.getDimension(); i++) {
+
             RealVector xPlusEps = x.copy();
             xPlusEps.setEntry(i, x.getEntry(i) + eps);
-            double functionValueAtX = function.apply(xPlusEps);
-            double functionValueAtXMinusEps = function.apply(x);
-            gradient[i] = (functionValueAtX - functionValueAtXMinusEps) / eps;
+            double functionValueAtXPlusEps = function.apply(xPlusEps);
+
+            RealVector xMinusEps = x.copy();
+            xMinusEps.setEntry(i, x.getEntry(i) - eps);
+            double functionValueAtXMinusEps = function.apply(xMinusEps);
+
+            gradient[i] = (functionValueAtXPlusEps - functionValueAtXMinusEps) / (2 * eps);
         }
         return new ArrayRealVector(gradient);
     }
@@ -59,6 +65,22 @@ public class DetailedMethods {
             }
         }
         return (a + b) / 2;
+    }
+
+    public static RealVector computeGradient(FunctionTUnary<RealVector> function, RealVector x, double stepSize) {
+        int dimensions = x.getDimension();
+        RealVector gradient = new ArrayRealVector(dimensions);
+
+        for (int i = 0; i < dimensions; i++) {
+            RealVector xPlusEps = x.copy();
+            xPlusEps.addToEntry(i, stepSize);
+            double fxPlusEps = function.apply(xPlusEps);
+            double fx = function.apply(x);
+            double derivative = (fxPlusEps - fx) / stepSize; // Численное дифференцирование
+            gradient.setEntry(i, derivative);
+        }
+
+        return gradient;
     }
 
 

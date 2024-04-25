@@ -4,16 +4,9 @@ import org.apache.commons.math3.analysis.MultivariateFunction;
 import org.apache.commons.math3.analysis.MultivariateVectorFunction;
 import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.RealVector;
-import org.apache.commons.math3.optim.PointValuePair;
-import org.apache.commons.math3.optim.SimpleValueChecker;
-import org.apache.commons.math3.optim.nonlinear.scalar.gradient.NonLinearConjugateGradientOptimizer;
-import org.apache.commons.math3.optim.nonlinear.scalar.noderiv.PowellOptimizer;
 import org.optima.kit.FunctionTUnary;
-import org.optima.utils.GenericOneVectorFunction;
-import org.optima.utils.NumCharacteristics;
 
-import static org.optima.utils.DetailedMethods.calculateGradient;
-import static org.optima.utils.DetailedMethods.goldenSectionSearch;
+import static org.optima.utils.DetailedMethods.*;
 
 public class Lab3 {
 
@@ -23,7 +16,7 @@ public class Lab3 {
         for (int i = 0; i < maxIterations; i++) {
 
             RealVector gradient = calculateGradient(function, x, eps);
-
+            // двигаемся в направлении, противоположном градиенту
             x = x.subtract(gradient.mapMultiply(eps));
 
             if (gradient.getNorm() < eps) {
@@ -59,6 +52,23 @@ public class Lab3 {
         }
 
         return xPrev;
+    }
+
+    public static RealVector newtoneRaphson(FunctionTUnary<RealVector> function, RealVector xStart, double eps, int maxIterations) {
+        RealVector x = xStart.copy();
+        double stepSize = 1e-5;
+
+        for (int iter = 0; iter < maxIterations; iter++) {
+            RealVector gradient = computeGradient(function, x, stepSize);
+            RealVector deltaX = gradient.mapMultiply(-1);
+            x = x.add(deltaX);
+
+            if (deltaX.getNorm() < eps) {
+                break;
+            }
+        }
+
+        return x;
     }
 
 

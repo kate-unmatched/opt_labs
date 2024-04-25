@@ -8,11 +8,9 @@ import static org.optima.labs.Lab3.gradientDescent;
 public class TestLab3 {
     @Test
     public void checkGradientDescent(){
-        // Пример использования
         FunctionTUnary<RealVector> function = new FunctionTUnary<RealVector>() {
             @Override
             public double apply(RealVector x) {
-                // Функция, которую мы оптимизируем (можно заменить на свою)
                 return Math.pow(x.getEntry(0) - 3, 2) + Math.pow(x.getEntry(1) - 4, 2);
             }
         };
