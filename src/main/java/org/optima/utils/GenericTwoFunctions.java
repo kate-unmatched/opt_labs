@@ -1,7 +1,7 @@
 package org.optima.utils;
 
 @FunctionalInterface
-public interface GenericOneVectorFunction<T, R> {
-    R apply(T function, R x1, double eps, int maxIterations);
+public interface GenericTwoFunctions<T, R> {
+    R apply(T function1, T function2, R x1, double eps, int maxIterations);
 
 }

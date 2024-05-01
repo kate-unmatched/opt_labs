@@ -1,8 +1,12 @@
 package org.optima.utils;
 
+import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.ArrayRealVector;
+import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.RealVector;
 import org.optima.kit.FunctionTUnary;
+
+import static org.optima.utils.DefaultNum.GOLDEN_RATIO_PROPORTION;
 
 public class DetailedMethods {
 
@@ -21,7 +25,7 @@ public class DetailedMethods {
     }
 
     public static RealVector calculateGradient(FunctionTUnary<RealVector> function, RealVector x, double eps) {
-        double[] gradient = new double[x.getDimension()];
+        RealVector gradient = new ArrayRealVector(x.getDimension());
 
         for (int i = 0; i < x.getDimension(); i++) {
 
@@ -33,55 +37,38 @@ public class DetailedMethods {
             xMinusEps.setEntry(i, x.getEntry(i) - eps);
             double functionValueAtXMinusEps = function.apply(xMinusEps);
 
-            gradient[i] = (functionValueAtXPlusEps - functionValueAtXMinusEps) / (2 * eps);
+            gradient.setEntry(i, (functionValueAtXPlusEps - functionValueAtXMinusEps) / (2 * eps));
         }
-        return new ArrayRealVector(gradient);
-    }
-
-    public static double goldenSectionSearch(FunctionTUnary<RealVector> function, RealVector x, RealVector direction, double eps) {
-        double a = 0;
-        double b = 1;
-        double phi = (1 + Math.sqrt(5)) / 2 - 1;
-        double x1 = b - phi * (b - a);
-        double x2 = a + phi * (b - a);
-        double f1 = function.apply(x.add(direction.mapMultiply(x1)));
-        double f2 = function.apply(x.add(direction.mapMultiply(x2)));
-        for (int i = 0; i < 100; i++) {
-            if (f1 > f2) {
-                a = x1;
-                x1 = x2;
-                f1 = f2;
-                x2 = a + phi * (b - a);
-                f2 = function.apply(x.add(direction.mapMultiply(x2)));
-            } else {
-                b = x2;
-                x2 = x1;
-                f2 = f1;
-                x1 = b - phi * (b - a);
-                f1 = function.apply(x.add(direction.mapMultiply(x1)));
-            }
-            if (Math.abs(b - a) < eps) {
-                break;
-            }
-        }
-        return (a + b) / 2;
-    }
-
-    public static RealVector computeGradient(FunctionTUnary<RealVector> function, RealVector x, double stepSize) {
-        int dimensions = x.getDimension();
-        RealVector gradient = new ArrayRealVector(dimensions);
-
-        for (int i = 0; i < dimensions; i++) {
-            RealVector xPlusEps = x.copy();
-            xPlusEps.addToEntry(i, stepSize);
-            double fxPlusEps = function.apply(xPlusEps);
-            double fx = function.apply(x);
-            double derivative = (fxPlusEps - fx) / stepSize; // Численное дифференцирование
-            gradient.setEntry(i, derivative);
-        }
-
         return gradient;
     }
 
+    public static RealMatrix calculateHessian(FunctionTUnary<RealVector> function, RealVector x, double eps) {
+        int n = x.getDimension();
+        RealMatrix hessian = new Array2DRowRealMatrix(n, n);
 
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                RealVector xPlusEpsI = x.copy();
+                xPlusEpsI.setEntry(i, x.getEntry(i) + eps);
+                RealVector xPlusEpsJ = x.copy();
+                xPlusEpsJ.setEntry(j, x.getEntry(j) + eps);
+                RealVector xMinusEpsI = x.copy();
+                xMinusEpsI.setEntry(i, x.getEntry(i) - eps);
+                RealVector xMinusEpsJ = x.copy();
+                xMinusEpsJ.setEntry(j, x.getEntry(j) - eps);
+
+                double f00 = function.apply(x);
+                double f10 = function.apply(xPlusEpsI);
+                double f01 = function.apply(xPlusEpsJ);
+                double f11 = function.apply(xPlusEpsI.add(xPlusEpsJ).mapMultiply(0.5));
+                double f20 = function.apply(xMinusEpsI);
+                double f02 = function.apply(xMinusEpsJ);
+
+                double hessianEntry = (f11 - f10 - f01 + f00) / (eps * eps);
+                hessian.setEntry(i, j, hessianEntry);
+            }
+        }
+
+        return hessian;
+    }
 }
