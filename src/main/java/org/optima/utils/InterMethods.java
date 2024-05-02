@@ -1,5 +1,10 @@
 package org.optima.utils;
 
+import org.optima.interfaces.GenericEpsFunction;
+import org.optima.interfaces.GenericIterFunction;
+import org.optima.interfaces.GenericOneVectorFunction;
+import org.optima.interfaces.GenericTwoFunctions;
+
 public class InterMethods {
 
     public static <U, R> R customParam(U function, R x1, R x2, double eps,

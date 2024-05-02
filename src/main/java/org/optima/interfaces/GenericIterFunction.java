@@ -1,4 +1,4 @@
-package org.optima.utils;
+package org.optima.interfaces;
 
 @FunctionalInterface
 public interface GenericIterFunction<T, R> {
