@@ -1,8 +1,5 @@
 package org.optima.labs;
 
-import org.apache.commons.math3.analysis.MultivariateFunction;
-import org.apache.commons.math3.analysis.MultivariateVectorFunction;
-import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.LUDecomposition;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.RealVector;
@@ -121,7 +118,6 @@ public class Lab3 {
             RealMatrix hessian = calculateHessian(function, x, eps);
 
             RealVector constraintGradient = calculateGradient(constraintFunction, x, eps);
-            RealMatrix constraintHessian = calculateHessian(constraintFunction, x, eps);
 
             RealVector penaltyGradient = gradient.add(constraintGradient.mapMultiply(penalty));
 
@@ -148,12 +144,5 @@ public class Lab3 {
                                               RealVector xStart, NumCharacteristics levelEps, NumCharacteristics levelIter) {
         return InterMethods.customParam3(function1, function2, xStart, levelEps, levelIter, Lab3::penaltyFunctions);
     }
-
-
-
-
-
-
-
 
 }

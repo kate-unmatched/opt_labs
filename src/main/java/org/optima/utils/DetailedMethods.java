@@ -6,8 +6,6 @@ import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.RealVector;
 import org.optima.kit.FunctionTUnary;
 
-import static org.optima.utils.DefaultNum.GOLDEN_RATIO_PROPORTION;
-
 public class DetailedMethods {
 
     public static double[] closestFibonacciPair(double value) {
@@ -61,8 +59,6 @@ public class DetailedMethods {
                 double f10 = function.apply(xPlusEpsI);
                 double f01 = function.apply(xPlusEpsJ);
                 double f11 = function.apply(xPlusEpsI.add(xPlusEpsJ).mapMultiply(0.5));
-                double f20 = function.apply(xMinusEpsI);
-                double f02 = function.apply(xMinusEpsJ);
 
                 double hessianEntry = (f11 - f10 - f01 + f00) / (eps * eps);
                 hessian.setEntry(i, j, hessianEntry);
