@@ -4,7 +4,10 @@ import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.RealVector;
-import org.optima.exceptions.NoSolutionsException;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
 public class Lab4 {
 
@@ -13,21 +16,21 @@ public class Lab4 {
         // при ограничениях:
         // 2x + 8y <= 13
         // 5x - 4y >= 1
-        // x + y = 7
+        // x + y <= 7
 
         // Матрица ограничений
         RealMatrix provMatr = new Array2DRowRealMatrix(
                 new double[][]{
                         {2, 8, 1, 0, 0, 13},
-                        {5, -4, 0, -1, 0, -1},
+                        {5, -4, 0, 1, 0, -1},
                         {1, 1, 0, 0, 1, 7}
                 });
 
         // Вектор коэффициентов целевой функции (с учетом дополнительных переменных)
-        RealVector provVecC = new ArrayRealVector(new double[]{-3, -5, 0, 0, 0, 0});
+        RealVector provVecC = new ArrayRealVector(new double[]{3, 5, 0, 0, 0, 0});
 
         // Запуск симплекс-метода
-        double[] solution = sisyaMethod(provMatr, provVecC);
+        double[] solution = bOObsMethod(provMatr, provVecC);
 
         // Вывод результатов
         System.out.println("Оптимальное решение:");
@@ -36,9 +39,9 @@ public class Lab4 {
         }
     }
 
-    public static double[] sisyaMethod(RealMatrix constraints, RealVector objective) {
+    public static double[] bOObsMethod(RealMatrix constraints, RealVector objective) {
         int numConstraints = constraints.getRowDimension();
-        int numVariables = constraints.getColumnDimension() - 1; // последняя колонка - это вектор свободных членов
+        int numVariables = constraints.getColumnDimension() - 1;
 
         // Создание таблицы симплекс-метода
         RealMatrix tableau = new Array2DRowRealMatrix(numConstraints + 1, numVariables + 1);
@@ -134,6 +137,16 @@ public class Lab4 {
     private static void printTableau(RealMatrix tableau) {
         int numRows = tableau.getRowDimension();
         int numCols = tableau.getColumnDimension();
+        System.out.print("    ");
+
+        for (int j = 0; j < numCols; j++) {
+            if (j==numCols-1) {
+                System.out.print("b");
+                break;
+            }
+            System.out.printf("X%s         ",j);
+        }
+        System.out.println();
         for (int i = 0; i < numRows; i++) {
             for (int j = 0; j < numCols; j++) {
                 System.out.printf("%10.4f ", tableau.getEntry(i, j));
