@@ -26,12 +26,6 @@
             <artifactId>commons-math3</artifactId>
             <version>3.6.1</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.openjfx/javafx-swing -->
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-swing</artifactId>
-            <version>23-ea+18</version>
-        </dependency>
     </dependencies>
     <build>
         <plugins>

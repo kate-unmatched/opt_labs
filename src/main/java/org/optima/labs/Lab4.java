@@ -5,10 +5,6 @@ import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.RealVector;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
-
 public class Lab4 {
 
     public static void main(String[] args) {
@@ -16,18 +12,22 @@ public class Lab4 {
         // при ограничениях:
         // 2x + 8y <= 13
         // 5x - 4y >= 1
-        // x + y <= 7
+        // x + y = 7
+        // 4x + 2y <= 10
+        // 3x - y >= 2
+        // x - 2y = 4
 
         // Матрица ограничений
         RealMatrix provMatr = new Array2DRowRealMatrix(
                 new double[][]{
-                        {2, 8, 1, 0, 0, 13},
-                        {5, -4, 0, 1, 0, -1},
-                        {1, 1, 0, 0, 1, 7}
+                        {2, 8, 1, 0, 0, 0, 13},  // 2x + 8y + x3 = 13
+                        {5, -4, 0, 1, 0, 0, -1}, // 5x - 4y + x4 = -1
+                        {1, 1, 0, 0, 1, 0, 7},   // x + y + x5 = 7
+                        {4, 2, 0, 0, 0, 1, 10}   // 4x + 2y + x6 = 10
                 });
 
         // Вектор коэффициентов целевой функции (с учетом дополнительных переменных)
-        RealVector provVecC = new ArrayRealVector(new double[]{3, 5, 0, 0, 0, 0});
+        RealVector provVecC = new ArrayRealVector(new double[]{-3, -5, 0, 0, 0, 0, 0});
 
         // Запуск симплекс-метода
         double[] solution = bOObsMethod(provMatr, provVecC);
@@ -48,6 +48,12 @@ public class Lab4 {
         tableau.setSubMatrix(constraints.getData(), 0, 0);
         tableau.setRowVector(numConstraints, objective);
 
+        // Инициализация массива базисных переменных
+        String[] basisVariables = new String[numConstraints];
+        for (int i = 0; i < numConstraints; i++) {
+            basisVariables[i] = "x" + (numVariables - numConstraints + i + 1);
+        }
+
         while (true) {
             // Поиск ведущего столбца
             int pivotCol = getPivotColumn(tableau);
@@ -57,16 +63,19 @@ public class Lab4 {
             int pivotRow = getPivotRow(tableau, pivotCol);
             if (pivotRow == -1) break;
 
+            // Обновление базисной переменной
+            basisVariables[pivotRow] = "x" + (pivotCol + 1);
+
             // Поворотная операция
             pivotOperation(tableau, pivotRow, pivotCol);
 
             // Отладочная информация для отслеживания состояния таблицы
-            printTableau(tableau);
+            printTableau(tableau, basisVariables);
         }
 
         // Оптимальное значение целевой функции
         double optimalValue = tableau.getEntry(numConstraints, numVariables);
-        System.out.println("Optimal Value: " + -optimalValue);
+        System.out.println("Optimal Value: " + optimalValue); // Изменено: убран знак минус
 
         // Оптимальные значения переменных
         double[] solution = new double[numVariables];
@@ -134,22 +143,26 @@ public class Lab4 {
         }
     }
 
-    private static void printTableau(RealMatrix tableau) {
+    private static void printTableau(RealMatrix tableau, String[] basisVariables) {
         int numRows = tableau.getRowDimension();
         int numCols = tableau.getColumnDimension();
         System.out.print("    ");
 
         for (int j = 0; j < numCols; j++) {
-            if (j==numCols-1) {
+            if (j == numCols - 1) {
                 System.out.print("b");
                 break;
             }
-            System.out.printf("X%s         ",j);
+            System.out.printf("X%s         ", j);
         }
         System.out.println();
+
         for (int i = 0; i < numRows; i++) {
             for (int j = 0; j < numCols; j++) {
                 System.out.printf("%10.4f ", tableau.getEntry(i, j));
+            }
+            if (i < basisVariables.length) {
+                System.out.printf("| %s", basisVariables[i]);
             }
             System.out.println();
         }
