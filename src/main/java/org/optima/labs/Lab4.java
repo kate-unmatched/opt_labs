@@ -1,47 +1,19 @@
 package org.optima.labs;
 
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
-import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.RealVector;
 
 public class Lab4 {
 
-    public static void main(String[] args) {
-        // Пример задачи: максимизация Z = 3x + 5y
-        // при ограничениях:
-        // 2x + 8y <= 13
-        // 5x - 4y >= 1
-        // x + y = 7
-        // 4x + 2y <= 10
-        // 3x - y >= 2
-        // x - 2y = 4
-
-        // Матрица ограничений
-        RealMatrix provMatr = new Array2DRowRealMatrix(
-                new double[][]{
-                        {2, 8, 1, 0, 0, 0, 13},  // 2x + 8y + x3 = 13
-                        {5, -4, 0, 1, 0, 0, -1}, // 5x - 4y + x4 = -1
-                        {1, 1, 0, 0, 1, 0, 7},   // x + y + x5 = 7
-                        {4, 2, 0, 0, 0, 1, 10}   // 4x + 2y + x6 = 10
-                });
-
-        // Вектор коэффициентов целевой функции (с учетом дополнительных переменных)
-        RealVector provVecC = new ArrayRealVector(new double[]{-3, -5, 0, 0, 0, 0, 0});
-
-        // Запуск симплекс-метода
-        double[] solution = bOObsMethod(provMatr, provVecC);
-
-        // Вывод результатов
-        System.out.println("Оптимальное решение:");
-        for (double v : solution) {
-            System.out.printf("%.4f ", v);
-        }
-    }
-
-    public static double[] bOObsMethod(RealMatrix constraints, RealVector objective) {
+    public static double[] bOObsMethod(RealMatrix constraints, RealVector objective, boolean isMinimization) {
         int numConstraints = constraints.getRowDimension();
         int numVariables = constraints.getColumnDimension() - 1;
+
+        // Преобразование задачи минимизации в задачу максимизации
+        if (isMinimization) {
+            objective = objective.mapMultiply(-1);
+        }
 
         // Создание таблицы симплекс-метода
         RealMatrix tableau = new Array2DRowRealMatrix(numConstraints + 1, numVariables + 1);
@@ -75,7 +47,10 @@ public class Lab4 {
 
         // Оптимальное значение целевой функции
         double optimalValue = tableau.getEntry(numConstraints, numVariables);
-        System.out.println("Optimal Value: " + optimalValue); // Изменено: убран знак минус
+        if (isMinimization) {
+            optimalValue = -optimalValue; // Вернуть значение с правильным знаком для минимизации
+        }
+        System.out.println("Optimal Value: " + optimalValue);
 
         // Оптимальные значения переменных
         double[] solution = new double[numVariables];
